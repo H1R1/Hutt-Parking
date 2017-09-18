@@ -5,127 +5,119 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
 
-public class DBConnection{
-	private Connection myConn;
-	TimeRemaining time;
-	ParkingTime hamerTime;
+import javax.annotation.Nonnull;
 
-	public DBConnection() throws Exception {
+import com.ocpsoft.pretty.time.PrettyTime;
 
-		String dbUrl = "jdbc:mysql://localhost:3306/user_login";
-		String user = "root";
-		String password = "";
+import nz.co.weltec.parking.utils.DateUtil;
 
-		Class.forName("com.mysql.jdbc.Dricer");
-		myConn = DriverManager.getConnection(dbUrl, user, password);
-		System.out.println("initialising database. . .");
-		time = new TimeRemaining();
-		hamerTime = new ParkingTime();
+public class DBConnection {
+
+	private static Connection CONNECTION;
+
+	public DBConnection() {
+		if (CONNECTION == null) {
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				CONNECTION = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_login", "root", "");
+				System.out.println("Initialising database...");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
-	public boolean searchUser (String plate, String password) throws SQLException {
-		PreparedStatement myStmt = null;
-		ResultSet myRS = null;
-
+	public boolean searchUser(@Nonnull String plate, @Nonnull String password) {
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 		try {
-			myStmt = myConn.prepareStatement("SELECT * FROM account WHERE liscensePlate =? and password =?");
-			myStmt.setString(1, plate);
-			myStmt.setString(2, password);
-			myRS = myStmt.executeQuery();
-
-			if(myRS.next()) {
+			preparedStatement = CONNECTION.prepareStatement("SELECT * FROM account WHERE `licensePlate`=? and `password`=?");
+			preparedStatement.setString(1, plate);
+			preparedStatement.setString(2, password);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
 				return true;
 			}
 			else {
 				return false;
 			}
-		} catch (SQLException e) {
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
-		}finally {
-			myConn.close();
+		}
+		finally {
+			try { resultSet.close(); } catch (Exception e) {}
+			try { preparedStatement.close(); } catch (Exception e) {}
 		}
 		return false;
 	}
 
-	public boolean checkTicketed(String plate) throws SQLException {
-		PreparedStatement myStmt = null;
-		ResultSet myRS = null;
-
+	public boolean checkTicketed(@Nonnull String plate) {
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 		try {
-			myStmt = myConn.prepareStatement("SELECT ticketed FROM account WHERE liscensePlate =?");
-			myStmt.setString(1, plate);
-			myRS = myStmt.executeQuery();
-
-			if(myRS.next()) {
-				if(myRS.getInt(0) == 1)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}	
+			preparedStatement = CONNECTION.prepareStatement("SELECT * FROM account WHERE `licensePlate`=?");
+			preparedStatement.setString(1, plate);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				return true;
 			}
-		} catch (SQLException e) {
+			else {
+				return false;
+			}
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
-		}finally {
-			myConn.close();
+		}
+		finally {
+			try { resultSet.close(); } catch (Exception e) {}
+			try { preparedStatement.close(); } catch (Exception e) {}
 		}
 		return false;
 	}
 
-	public String getTime(int carpark) throws ParseException, SQLException {
-		PreparedStatement myStmt = null;
-		ResultSet myRS = null;
-
+	public String getTime(@Nonnull Number carpark) {
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 		try {
-			myStmt = myConn.prepareStatement("SELECT endTime FROM carpark WHERE idcarpark =?");
-			myStmt.setInt(1, carpark);
-			myRS = myStmt.executeQuery();
-
-			if(myRS.next()) {
-				String endTime = myRS.getString(0);
-				int totalMin = time.calcDiff(endTime);
-				String result = time.timeDiff(totalMin);
-				return result;
+			preparedStatement = CONNECTION.prepareStatement("SELECT endTime FROM carpark WHERE `idcarpark`=?");
+			preparedStatement.setInt(1, carpark.intValue());
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				return new PrettyTime().format(DateUtil.parse(resultSet.getString(0), "hh:mm").toDate());
 			}
-		} catch (SQLException e) {
+			else {
+				return null;
+			}
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
-		}finally {
-			myConn.close();
+		}
+		finally {
+			try { resultSet.close(); } catch (Exception e) {}
+			try { preparedStatement.close(); } catch (Exception e) {}
 		}		
 		return null;
 	}
 
-	public boolean addTime(String parkNum, String min) throws SQLException {
-		PreparedStatement myStmt = null;
-		ResultSet myRS = null;
-		int num = Integer.parseInt(min);
-		int parkingNum = Integer.parseInt(parkNum);
-		String start = hamerTime.startTime();
-		String end = hamerTime.endTime(num);
-
+	public boolean addTime(@Nonnull Number parkNum, @Nonnull Number minutes) throws SQLException {
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 		try {
-			myStmt = myConn.prepareStatement("UPDATE carpark SET startTime = ?, endTime = ?, expired = 0 WHERE idcarpark =?");
-			myStmt.setString(1, start);
-			myStmt.setString(2, end);
-			myStmt.setInt(3, parkingNum);
-			myRS = myStmt.executeQuery();
-
-			if(myRS.next()) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		} catch (SQLException e) {
+			preparedStatement = CONNECTION.prepareStatement("UPDATE carpark SET `endTime`=? WHERE `idcarpark`=?");
+			preparedStatement.setString(1, DateUtil.format(DateUtil.now().plusMinutes(minutes.intValue()).toDate(), "hh:mm"));
+			preparedStatement.setInt(2, parkNum.intValue());
+			resultSet = preparedStatement.executeQuery();
+			return resultSet.next();
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
-		}finally {
-			myConn.close();
 		}
+		finally {
+			try { resultSet.close(); } catch (Exception e) {}
+			try { preparedStatement.close(); } catch (Exception e) {}
+		}		
 		return false;
 	}
 }

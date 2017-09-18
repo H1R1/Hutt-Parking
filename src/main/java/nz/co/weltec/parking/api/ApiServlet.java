@@ -24,7 +24,7 @@ import nz.co.weltec.parking.json.JSON;
 public abstract class ApiServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -2565751359049209607L;
-	
+
 	/**
 	 * Optional interface for implementers to provide their own {@link Gson}
 	 * definitions.
@@ -59,7 +59,7 @@ public abstract class ApiServlet extends HttpServlet {
 		}
 
 	}
-	
+
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) { 
 		resp.setHeader("Access-Control-Allow-Origin", "*");
@@ -96,7 +96,7 @@ public abstract class ApiServlet extends HttpServlet {
 			return getAcceptType(request);
 		}
 	}
-	
+
 	protected Long getContentLength(HttpServletRequest request) throws Exception {
 		Long contentLength = null;
 		Enumeration<String> headerNames = request.getHeaderNames();
@@ -209,9 +209,17 @@ public abstract class ApiServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	protected void writeHtml(HttpServletResponse resp, String html) {
 		write(resp, html, MediaType.HTML_UTF_8, HttpServletResponse.SC_OK);
+	}
+
+	protected void redirect(HttpServletRequest request, HttpServletResponse response, String endpoint) {
+		try {
+			response.sendRedirect(endpoint);
+		} catch (Exception e) {
+			internalError(request, response, e);
+		}
 	}
 
 	protected void internalError(HttpServletRequest request, HttpServletResponse response, Throwable exception) {
