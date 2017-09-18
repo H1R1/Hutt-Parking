@@ -17,10 +17,10 @@ public class LoginCheck extends ApiServlet {
 		String uname = request.getParameter("uname");
 		String password = request.getParameter("password");
 		if (new DBConnection().searchUser(uname, password)) {
-			redirect(request, response, "home.jsp");
+			redirect(request, response, "http://localhost:8080/Home.jsp");
 		}
 		else {
-			redirect(request, response, "AddTime.jsp");
+			redirect(request, response, "http://localhost:8080/AddTime.jsp"); //TODO work this for local vs production context
 		}
 	}
 
