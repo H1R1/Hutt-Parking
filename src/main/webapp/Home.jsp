@@ -27,7 +27,7 @@
 
 <h2>Enter your park number to check time remaining:</h2>
 
-	<form method="post" action="LoginCheck">
+	<form method="post" action="/api/get-vehicle">
 		<table>
 			<tr>
 				<td>Park Number</td>
@@ -38,43 +38,24 @@
 				<td></td>
 				<td><input type="submit" value="Check"></td>
 			</tr>
-						<tr>
-				<td>Time remaining</td>
+			<tr>
+				<td>Time remaining:</td>
 				<td><output type="text" name="remaining"></td>
-				<td>**********************</td>
-				<td><output type="text" name="timeLeft"></td>
 			</tr>
-			
+		</table>
+	</form>
+	<form method="post" action="">
+		<h2>Outstanding Tickets:</h2>
+		<table>
+			<tr>
+				<td>Outstanding Ticket:</td>
+				<td><output type="text" name="remaining"></td>
+			</tr>
 		</table>
 	</form>
 
 
 <p>
-
-
-
-<h2>Outstanding Tickets:</h2>
-
-			
-
-<p>You have 		<td>  <%
-//boolean ticketBool = dbConnection.checkTicketed(pnumber); 
-//               out.println(  + "\n");
-         %></td> parking tickets outstanding </p> 
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
 
 </div>
 

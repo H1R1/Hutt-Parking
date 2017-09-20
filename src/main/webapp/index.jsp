@@ -16,9 +16,7 @@
 
 <div id="menu">
 <ul>
-<li><a href="Home.jsp">Home</a></li>
-<li><a href="AddTime.jsp">Add Time</a></li>
-<li><a href="Login.jsp">Log Out</a></li>
+<li><a href="index.jsp">Login</a></li>
 </ul>
 </div>
 
