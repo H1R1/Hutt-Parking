@@ -28,7 +28,7 @@
 
 <h2>Please login to continue:</h2>
 
-<form method="post" action="LoginCheck">
+<form method="post" action="/api/login-check">
 		<table>
 			<tr>
 				<td>Number Plate</td>
