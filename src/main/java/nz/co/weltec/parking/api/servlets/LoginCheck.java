@@ -20,7 +20,7 @@ public class LoginCheck extends ApiServlet {
 			redirect(request, response, "http://localhost:8080/Home.jsp");
 		}
 		else {
-			redirect(request, response, "http://localhost:8080/AddTime.jsp"); //TODO work this for local vs production context
+			redirect(request, response, "http://localhost:8080/index.jsp");
 		}
 	}
 
