@@ -39,6 +39,7 @@
 			</tr>
 			<tr>
 				<td>Time remaining:</td>
+				<td>00:00 Expired!</td>
 				<td>${remaining}</td>
 			</tr>
 		</table>

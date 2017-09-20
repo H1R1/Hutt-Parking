@@ -20,7 +20,7 @@
 <ul>
 <li><a href="Home.jsp">Home</a></li>
 <li><a href="AddTime.jsp">Add Time</a></li>
-<li><a href="Login.jsp">Log Out</a></li>
+<li><a href="index.jsp">Log Out</a></li>
 </ul>
 </div>
 
@@ -30,11 +30,11 @@
 
 <h2>Add Time</h2>
 
-<form method="post" action="LoginCheck">
+<form method="post" action="/api/add-time">
 	<table>
 			<tr>
 				<td>Park Number</td>
-				<td>******************</td>
+				<td><input name="park" type="text"></td>
 			</tr>
 
 						<tr>

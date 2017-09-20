@@ -10,18 +10,24 @@ import nz.co.weltec.parking.database.DBConnection;
 @WebServlet("/api/get-vehicle")
 public class GetVehicle extends ApiServlet {
 
-	private static final long serialVersionUID = 4729175515142157676L;
+	private static final long serialVersionUID = 4729175515142157676L;	
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		String pnumber = request.getParameter("pnumber");
-		String result = new DBConnection().getTime(Integer.parseInt(pnumber));
-		if (result.length() > 0) {
-			request.setAttribute("remaining", result);
+		try {
+			String result = new DBConnection().getTime(Integer.parseInt(pnumber));
+			if (result.isEmpty()) {
+				redirect(request, response, "http://localhost:8080/Home.jsp");
+			}
+			else {
+				request.setAttribute("remaining", result);
+				//request.getRequestDispatcher("/WEB-INF/jsp/Home.jsp").include(request, response);
+				redirect(request, response, "http://localhost:8080/Home1234.jsp");
+			}
+		} catch (Exception e){
+			System.out.println(e);
 		}
-		else {
-			redirect(request, response, "http://localhost:8080/home.jsp");
-		}
+		redirect(request, response, "http://localhost:8080/Home.jsp");
 	}
-
 }

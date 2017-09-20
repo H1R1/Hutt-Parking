@@ -28,11 +28,11 @@ public class DBConnection {
 		}
 	}
 
-	public boolean searchUser(@Nonnull String plate, @Nonnull String password) {
+	public int searchUser(@Nonnull String plate, @Nonnull String password) {
 		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+		int resultSet = 0;
 		try {
-			preparedStatement = CONNECTION.prepareStatement("SELECT * FROM account WHERE `licensePlate`=? and `password`=?");
+		/*	preparedStatement = CONNECTION.prepareStatement("SELECT * FROM account WHERE `licensePlate`=? and `password`=?");
 			preparedStatement.setString(1, plate);
 			preparedStatement.setString(2, password);
 			resultSet = preparedStatement.executeQuery();
@@ -41,23 +41,31 @@ public class DBConnection {
 			}
 			else {
 				return false;
-			}
+			}*/
+			preparedStatement = CONNECTION.prepareStatement(searchUserQuery(plate, password));
+			resultSet = preparedStatement.executeUpdate();
+			return resultSet;
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
-			try { resultSet.close(); } catch (Exception e) {}
 			try { preparedStatement.close(); } catch (Exception e) {}
 		}
-		return false;
+		return 0;
 	}
 
-	public boolean checkTicketed(@Nonnull String plate) {
+	public String searchUserQuery(String plate, @Nonnull String password) {
+		
+		String statement = ("SELECT * FROM account WHERE `licensePlate`='" + plate + "' and `password`='" + password +  "'");
+		return statement;
+	}
+	
+	public int checkTicketed(@Nonnull String plate) {
 		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+		int resultSet = 0;
 		try {
-			preparedStatement = CONNECTION.prepareStatement("SELECT * FROM account WHERE `licensePlate`=?");
+		/*	preparedStatement = CONNECTION.prepareStatement("SELECT * FROM account WHERE `licensePlate`=?");
 			preparedStatement.setString(1, plate);
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
@@ -65,59 +73,86 @@ public class DBConnection {
 			}
 			else {
 				return false;
-			}
+			}*/
+			preparedStatement = CONNECTION.prepareStatement(checkTicketQuery(plate));
+			resultSet = preparedStatement.executeUpdate();
+			return resultSet;
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
-			try { resultSet.close(); } catch (Exception e) {}
 			try { preparedStatement.close(); } catch (Exception e) {}
 		}
-		return false;
+		return 0;
+	}
+	
+	public String checkTicketQuery(String plate) {
+		
+		String statement = ("SELECT * FROM account WHERE `licensePlate`='" + plate + "'");
+		return statement;
 	}
 
-	public String getTime(@Nonnull Number carpark) {
+	public int getTime(@Nonnull Number carpark) {
 		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+		int resultSet = 0;
 		try {
-			preparedStatement = CONNECTION.prepareStatement("SELECT endTime FROM carpark WHERE `idcarpark`=?");
+			/*preparedStatement = CONNECTION.prepareStatement("SELECT endTime FROM carpark WHERE `idcarpark`=?");
 			preparedStatement.setInt(1, carpark.intValue());
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
-				return new PrettyTime().format(DateUtil.parse(resultSet.getString(0), "hh:mm").toDate());
+				return resultSet.getString(1);
 			}
 			else {
 				return null;
-			}
+			}*/
+			preparedStatement = CONNECTION.prepareStatement(getTimeQuery(carpark));
+			resultSet = preparedStatement.executeUpdate();
+			return resultSet;
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
-			try { resultSet.close(); } catch (Exception e) {}
-			try { preparedStatement.close(); } catch (Exception e) {}
+				try { preparedStatement.close(); } catch (Exception e) {}
 		}		
-		return null;
+		return 0;
 	}
+	
+	public String getTimeQuery(Number carpark) {
+		
+		String statement = ("SELECT endTime FROM carpark WHERE `idcarpark`=" + carpark.intValue());
+		return statement;
+	}
+	
 
-	public boolean addTime(@Nonnull Number parkNum, @Nonnull Number minutes) throws SQLException {
+	public int addTime(@Nonnull Number parkNum, @Nonnull Number minutes) throws SQLException {
 		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+		int resultSet = 0;
+//		try {
+//			preparedStatement = CONNECTION.prepareStatement("UPDATE carpark SET `endTime`=? WHERE `idcarpark`=?");
+//			preparedStatement.setString(1, DateUtil.format(DateUtil.now().plusMinutes(minutes.intValue()).toDate(), "hh:mm"));
+//			preparedStatement.setInt(2, parkNum.intValue());
+//			resultSet = preparedStatement.executeUpdate();
+//			return resultSet;
+//		}
 		try {
-			preparedStatement = CONNECTION.prepareStatement("UPDATE carpark SET `endTime`=? WHERE `idcarpark`=?");
-			preparedStatement.setString(1, DateUtil.format(DateUtil.now().plusMinutes(minutes.intValue()).toDate(), "hh:mm"));
-			preparedStatement.setInt(2, parkNum.intValue());
-			resultSet = preparedStatement.executeQuery();
-			return resultSet.next();
+			preparedStatement = CONNECTION.prepareStatement(calcTime(parkNum, minutes));
+			resultSet = preparedStatement.executeUpdate();
+			return resultSet;
 		} 
+		
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
-			try { resultSet.close(); } catch (Exception e) {}
 			try { preparedStatement.close(); } catch (Exception e) {}
 		}		
-		return false;
+		return 0;
+	}
+	
+	public String calcTime(Number parkNum, Number minutes) {
+		String statement = ("UPDATE carpark SET `endTime`='" + (DateUtil.format(DateUtil.now().plusMinutes(minutes.intValue()).toDate(), "hh:mm")).toString() + "' WHERE `idcarpark` = " + parkNum.intValue());
+		return statement;
 	}
 }
