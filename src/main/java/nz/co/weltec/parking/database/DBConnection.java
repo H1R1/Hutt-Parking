@@ -20,7 +20,7 @@ public class DBConnection {
 		if (CONNECTION == null) {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				CONNECTION = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_login", "root", "");
+				CONNECTION = DriverManager.getConnection("jdbc:mysql://localhost:3306/huttparking?useSSL=false", "root", "Testing123");
 				System.out.println("Initialising database...");
 			} catch (Exception e) {
 				e.printStackTrace();
